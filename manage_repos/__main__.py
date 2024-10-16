@@ -20,24 +20,6 @@ def main():
         "the directory does not exist, it will be created.",
     )
 
-    stage_parser = subparsers.add_parser(
-        "stage",
-        description="Stage changes in managed repositories. This performs a " +
-        "git add and commit.",
-    )
-    stage_parser.add_argument(
-        "-f",
-        "--files",
-        nargs="+",
-        default=['.'],
-        help="List of files to stage in the repositories.",
-    )
-    stage_parser.add_argument(
-        "-m",
-        "--message",
-        help="Commit message to use for the changes.",
-    )
-
     branch_parser = subparsers.add_parser(
         "branch", 
         description="Create a new feature branch in the managed repositories.",
@@ -95,6 +77,24 @@ def main():
         help="Name of the remote to push to.  This is optional and defaults " +
         "to 'origin'.",
         default="origin",
+    )
+
+    stage_parser = subparsers.add_parser(
+        "stage",
+        description="Stage changes in managed repositories. This performs a " +
+        "git add and commit.",
+    )
+    stage_parser.add_argument(
+        "-f",
+        "--files",
+        nargs="+",
+        default=['.'],
+        help="List of files to stage in the repositories.",
+    )
+    stage_parser.add_argument(
+        "-m",
+        "--message",
+        help="Commit message to use for the changes.",
     )
 
     sync_parser = subparsers.add_parser(
