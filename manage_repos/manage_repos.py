@@ -220,7 +220,7 @@ def stage(args):
                 "git",
                 "commit",
                 "-m",
-                f"\"{args.message}\"",
+                f"{args.message}",
                 file
             ], cwd=path)
         except subprocess.CalledProcessError as e:
