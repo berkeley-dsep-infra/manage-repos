@@ -55,8 +55,8 @@ def branch(args):
 
         print()
 
-        if errors is not None:
-            return errors
+    if errors is not None:
+        return errors
 
 
 def clone(args):
@@ -124,8 +124,8 @@ def clone(args):
         subprocess.check_call(["git", "remote", "-v"], cwd=path)
         print()
 
-        if errors is not None:
-            return errors
+    if errors is not None:
+        return errors
 
 
 def patch(args):
