@@ -5,7 +5,6 @@ To use this tool, copy it to a directory in your PATH or run it directly from
 this directory.
 """
 
-import argparse
 import subprocess
 import sys
 import os
