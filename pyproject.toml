@@ -1,0 +1,22 @@
+[project]
+name = "manage-repos"
+version = "0.1"
+requires-python = ">=3.10"
+authors = [
+  {name = "Shane Knapp", email = "sknapp@berkeley.edu"},
+]
+maintainers = [
+  {name = "Shane Knapp", email = "sknapp@berkeley.edu"},
+]
+description = "A tool for managing multiple git repositories"
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+
+
+[project.urls]
+Documentation = "https://docs.datahub.berkeley.edu/admins/howto/managing-multiple-user-image-repos.html"
+Repository = "https://github.com/berkeley-dsep-infra/manage-repos.git"
+"Bug Tracker" = "https://github.com/berkeley-dsep-infra/manage-repos/issues"
+
+[project.scripts]
+manage-repos = "manage_repos.__main__:main"

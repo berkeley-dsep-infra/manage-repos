@@ -1,2 +1,9 @@
-# manage-repos
-a small tool to help manage multiple git repositories
+# Tooling to help mange user image repos
+
+To install, clone this repo and from inside the directory run:
+
+```
+pip install --editable .
+```
+
+See the official [documentation](https://docs.datahub.berkeley.edu/admins/howto/managing-multiple-user-image-repos.html)
