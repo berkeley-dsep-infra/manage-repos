@@ -9,6 +9,7 @@ import subprocess
 import sys
 import os
 
+
 def _iter_repos(args):
     """
     Iterate over the repositories in the config file.
@@ -24,9 +25,7 @@ def _iter_repos(args):
             path = os.path.join(args.destination, name)
             if not os.path.exists(path):
                 if args.command != "clone":
-                    print(
-                        f"Skipping {name} as it doesn't exist in {args.destination}"
-                    )
+                    print(f"Skipping {name} as it doesn't exist in {args.destination}")
                     continue
             yield name, path, line
 
@@ -37,15 +36,10 @@ def branch(args):
     """
     errors = []
     for name, path, _ in _iter_repos(args):
-        print(
-            f"Creating and switching to feature branch {args.branch} in " +
-            f"{name}"
-        )
+        print(f"Creating and switching to feature branch {args.branch} in {name}")
 
         try:
-            subprocess.check_call(
-                ["git", "switch", "-c", args.branch], cwd=path
-            )
+            subprocess.check_call(["git", "switch", "-c", args.branch], cwd=path)
         except subprocess.CalledProcessError as e:
             error = f"Error creating branch {args.branch} in {name} in {path}: {e}"
             print(error)
@@ -78,8 +72,8 @@ def clone(args):
 
         if args.remote and not args.github_user:
             print(
-                "Remote cannot be updated, please specify a GitHub username " +
-                "for the fork to continue."
+                "Remote cannot be updated, please specify a GitHub username "
+                + "for the fork to continue."
             )
             sys.exit(1)
 
@@ -152,9 +146,10 @@ def patch(args):
             print()
             continue
         print()
-    
+
     if errors is not None:
         return errors
+
 
 def push(args):
     """
@@ -194,7 +189,7 @@ def stage(args):
                     ["git", "status", "--porcelain"],
                     cwd=path,
                     capture_output=True,
-                    text=True
+                    text=True,
                 )
                 print(f"Adding all changes in {name} to staging:")
                 print(changed_files.stdout)
@@ -202,11 +197,7 @@ def stage(args):
                 print(f"Adding {file} to staging in {name}.")
 
             try:
-                subprocess.check_call([
-                    "git",
-                    "add",
-                    file
-                ], cwd=path)
+                subprocess.check_call(["git", "add", file], cwd=path)
             except subprocess.CalledProcessError as e:
                 error = f"Error adding {name} to staging: {e}"
                 print(error)
@@ -216,13 +207,9 @@ def stage(args):
 
         print(f"Committing changes in {name} with message {args.message}.")
         try:
-            subprocess.check_call([
-                "git",
-                "commit",
-                "-m",
-                f"{args.message}",
-                file
-            ], cwd=path)
+            subprocess.check_call(
+                ["git", "commit", "-m", f"{args.message}", file], cwd=path
+            )
         except subprocess.CalledProcessError as e:
             error = f"Error adding {name} to staging: {e}"
             print(error)
@@ -234,6 +221,7 @@ def stage(args):
 
     if errors is not None:
         return errors
+
 
 def sync(args):
     """
@@ -248,11 +236,9 @@ def sync(args):
         subprocess.check_call(["git", "switch", args.branch_default], cwd=path)
         subprocess.check_call(["git", "fetch", "--all", "--prune"], cwd=path)
         try:
-            subprocess.check_call([
-                "git",
-                "rebase",
-                "upstream/" + args.branch_default
-            ], cwd=path)
+            subprocess.check_call(
+                ["git", "rebase", "upstream/" + args.branch_default], cwd=path
+            )
         except subprocess.CalledProcessError as e:
             error = f"Error rebasing {name} to {path}: {e}"
             print(error)
@@ -263,15 +249,14 @@ def sync(args):
         if args.push:
             print(f"Pushing {name} to {args.remote}.")
             try:
-                subprocess.check_call([
-                    "git",
-                    "push",
-                    args.remote,
-                    args.branch_default
-                ], cwd=path)
+                subprocess.check_call(
+                    ["git", "push", args.remote, args.branch_default], cwd=path
+                )
             except subprocess.CalledProcessError as e:
-                error = f"Error pushing {name} to {args.remote}/" + \
-                f"{args.branch_default}: {e}"
+                error = (
+                    f"Error pushing {name} to {args.remote}/"
+                    + f"{args.branch_default}: {e}"
+                )
                 print(error)
                 errors.append(error)
                 print()
