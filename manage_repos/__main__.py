@@ -1,6 +1,7 @@
 import argparse
 from . import manage_repos
 
+
 def main():
     argparser = argparse.ArgumentParser()
     subparsers = argparser.add_subparsers(
@@ -15,23 +16,27 @@ def main():
         help="Path to file containing list of repositories to operate on.",
     )
     argparser.add_argument(
-        "-d", "--destination", default=".", 
-        help="Location on the filesystem of the managed repositories. If " +
-        "the directory does not exist, it will be created.",
+        "-d",
+        "--destination",
+        default=".",
+        help="Location on the filesystem of the managed repositories. If "
+        + "the directory does not exist, it will be created.",
     )
 
     branch_parser = subparsers.add_parser(
-        "branch", 
+        "branch",
         description="Create a new feature branch in the managed repositories.",
     )
     branch_parser.add_argument(
-        "-b", "--branch", help="Name of the feature branch to create.",
+        "-b",
+        "--branch",
+        help="Name of the feature branch to create.",
     )
 
     clone_parser = subparsers.add_parser(
         "clone",
-        description="Clone repositories in the config file and " +
-        "optionally set a remote for a fork.",
+        description="Clone repositories in the config file and "
+        + "optionally set a remote for a fork.",
     )
     clone_parser.add_argument(
         "-s",
@@ -43,8 +48,8 @@ def main():
         "-r",
         "--remote",
         default="origin",
-        help="If --set-remote is used, override the name of the remote to " +
-        "set for the fork. This is optional and defaults to 'origin'.",
+        help="If --set-remote is used, override the name of the remote to "
+        + "set for the fork. This is optional and defaults to 'origin'.",
     )
     clone_parser.add_argument(
         "-g",
@@ -56,39 +61,31 @@ def main():
         "patch",
         description="Apply a git patch to managed repositories.",
     )
-    patch_parser.add_argument(
-        "-p",
-        "--patch",
-        help="Path to the patch file to apply."
-    )
+    patch_parser.add_argument("-p", "--patch", help="Path to the patch file to apply.")
 
     push_parser = subparsers.add_parser(
         "push",
         description="Push managed repositories to a remote.",
     )
-    push_parser.add_argument(
-        "-b",
-        "--branch",
-        help="Name of the branch to push."
-    )
+    push_parser.add_argument("-b", "--branch", help="Name of the branch to push.")
     push_parser.add_argument(
         "-r",
         "--remote",
-        help="Name of the remote to push to.  This is optional and defaults " +
-        "to 'origin'.",
+        help="Name of the remote to push to.  This is optional and defaults "
+        + "to 'origin'.",
         default="origin",
     )
 
     stage_parser = subparsers.add_parser(
         "stage",
-        description="Stage changes in managed repositories. This performs a " +
-        "git add and commit.",
+        description="Stage changes in managed repositories. This performs a "
+        + "git add and commit.",
     )
     stage_parser.add_argument(
         "-f",
         "--files",
         nargs="+",
-        default=['.'],
+        default=["."],
         help="List of files to stage in the repositories.",
     )
     stage_parser.add_argument(
@@ -99,22 +96,22 @@ def main():
 
     sync_parser = subparsers.add_parser(
         "sync",
-        description="Sync managed repositories to the latest version using " +
-        "'git rebase'. Optionally push to a remote fork.",
+        description="Sync managed repositories to the latest version using "
+        + "'git rebase'. Optionally push to a remote fork.",
     )
     sync_parser.add_argument(
         "-b",
         "--branch-default",
         default="main",
-        help="Default remote branch to sync to. This is optional and " +
-        "defaults to 'main'.",
+        help="Default remote branch to sync to. This is optional and "
+        + "defaults to 'main'.",
     )
     sync_parser.add_argument(
         "-u",
         "--upstream",
         default="upstream",
-        help="Name of the parent remote to sync from. This is optional and " +
-        "defaults to 'upstream'.",
+        help="Name of the parent remote to sync from. This is optional and "
+        + "defaults to 'upstream'.",
     )
     sync_parser.add_argument(
         "-p",
@@ -126,12 +123,12 @@ def main():
         "-r",
         "--remote",
         default="origin",
-        help="The name of the remote fork to push to.  This is optional and " +
-        "defaults to 'origin'.",
+        help="The name of the remote fork to push to.  This is optional and "
+        + "defaults to 'origin'.",
     )
 
     args = argparser.parse_args()
-    
+
     print(args)
     errors = []
     if args.command == "branch":
