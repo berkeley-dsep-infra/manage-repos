@@ -32,7 +32,7 @@ def _iter_repos(args):
                     continue
             else:
                 if not os.path.exists(path):
-                    print(f"Skipping {name} as it doesn't exist in {args.destination}")
+                    print(f"Skipping {name} as it doesn't exist at {path}")
                     continue
             yield name, path, line
 
