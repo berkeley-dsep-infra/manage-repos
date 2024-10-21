@@ -20,9 +20,9 @@ def main():
         "-d",
         "--destination",
         default=".",
-        help="Location on the filesystem of root directory containing the "
-        + "managed repositories. If a repo directory does not exist, it will "
-        + "be created. This argument is optional, and if not provided "
+        help="Location on the filesystem of the directory containing the "
+        + "managed repositories. If a repo sub-directory does not exist, it "
+        + "will be created. This argument is optional, and if not provided "
         + "defaults to the current working directory.",
     )
 
