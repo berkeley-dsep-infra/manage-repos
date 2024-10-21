@@ -28,7 +28,7 @@ def _iter_repos(args):
             # checking for existing repos
             if args.command == "clone":
                 if os.path.exists(path):
-                    print(f"Skipping {name} as it already exists in {args.destination}")
+                    print(f"Skipping {name} as it already exists in {path}")
                     continue
             else:
                 if not os.path.exists(path):
@@ -73,11 +73,7 @@ def clone(args):
 
     errors = []
     for name, path, repo in _iter_repos(args):
-        if os.path.exists(path):
-            print(f"Skipping {name} as it already exists.")
-            next
-
-        if args.remote and not args.github_user:
+        if args.set_remote and not args.github_user:
             print(
                 "Remote cannot be updated, please specify a GitHub username "
                 + "for the fork to continue."
