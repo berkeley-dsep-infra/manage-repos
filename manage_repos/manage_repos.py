@@ -185,6 +185,11 @@ def stage(args):
     committing them.
     """
     errors = []
+
+    if not args.message:
+        print("Please provide a commit message via the --message argument.")
+        sys.exit(1)
+
     for name, path, repo in _iter_repos(args):
         for file in args.files:
             if file == ".":
