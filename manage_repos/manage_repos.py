@@ -23,8 +23,15 @@ def _iter_repos(args):
                 continue
             name = line.split("/")[-1].replace(".git", "")
             path = os.path.join(args.destination, name)
-            if not os.path.exists(path):
-                if args.command != "clone":
+
+            # clone behavior is a little different than other commands when
+            # checking for existing repos
+            if args.command == "clone":
+                if os.path.exists(path):
+                    print(f"Skipping {name} as it already exists in {args.destination}")
+                    continue
+            else:
+                if not os.path.exists(path):
                     print(f"Skipping {name} as it doesn't exist in {args.destination}")
                     continue
             yield name, path, line
