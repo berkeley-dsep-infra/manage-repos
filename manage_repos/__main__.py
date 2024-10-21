@@ -86,7 +86,8 @@ def main():
         "--files",
         nargs="+",
         default=["."],
-        help="List of files to stage in the repositories.",
+        help="List of files to stage in the repositories. Optional, and if "
+        + "left blank will default to all modified in the directory."
     )
     stage_parser.add_argument(
         "-m",
