@@ -13,14 +13,17 @@ def main():
         "-c",
         "--config",
         default="repos.txt",
-        help="Path to file containing list of repositories to operate on.",
+        help="Path to file containing list of repositories to operate on. "
+        + "Defaults to repos.txt located in the current working directory.",
     )
     argparser.add_argument(
         "-d",
         "--destination",
         default=".",
-        help="Location on the filesystem of the managed repositories. If "
-        + "the directory does not exist, it will be created.",
+        help="Location on the filesystem of root directory containing the "
+        + "managed repositories. If a repo directory does not exist, it will "
+        + "be created. This argument is optional, and if not provided "
+        + "defaults to the current working directory.",
     )
 
     branch_parser = subparsers.add_parser(
