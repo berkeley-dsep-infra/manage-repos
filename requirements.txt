@@ -1,0 +1,2 @@
+# these are currently only used for github actions and linting
+ruff==0.7.0

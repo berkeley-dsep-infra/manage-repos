@@ -20,3 +20,6 @@ Repository = "https://github.com/berkeley-dsep-infra/manage-repos.git"
 
 [project.scripts]
 manage-repos = "manage_repos.__main__:main"
+
+[tool.codespell]
+skip = '.git,*.pdf,*.svg,*.egg-info*,*/__pycache__/*'
