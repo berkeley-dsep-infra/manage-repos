@@ -242,7 +242,7 @@ def sync(args):
     for name, path, repo in _iter_repos(args):
         print(f"Syncing {name} from {repo} to {path}.")
         subprocess.check_call(["git", "switch", args.branch_default], cwd=path)
-        
+
         try:
             subprocess.check_call(["git", "fetch", "--all", "--prune"], cwd=path)
         except subprocess.CalledProcessError as e:
@@ -255,7 +255,7 @@ def sync(args):
 
         try:
             subprocess.check_call(
-                ["git", "rebase", "upstream/" + args.branch_default], cwd=path
+                ["git", "rebase", "--stat", "upstream/" + args.branch_default], cwd=path
             )
         except subprocess.CalledProcessError as e:
             error = f"Error rebasing {name} to {path}: {e}"
