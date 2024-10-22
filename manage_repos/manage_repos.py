@@ -5,6 +5,7 @@ To use this tool, copy it to a directory in your PATH or run it directly from
 this directory.
 """
 
+import shutil
 import subprocess
 import sys
 import os
@@ -137,17 +138,22 @@ def patch(args):
         print(f"Patch file {args.patch} does not exist.")
         sys.exit(1)
 
+    type(args.patch)
     errors = []
     for name, path, _ in _iter_repos(args):
+        type(path)
         print(f"Applying patch to {name} in {path}")
         try:
+            shutil.copy(args.patch, path)
             subprocess.check_call(["git", "apply", args.patch], cwd=path)
         except subprocess.CalledProcessError as e:
-            error = f"Error applying patch {patch} to {name} in {path}: {e}"
+            error = f"Error applying patch {args.patch} in {path}: {e}"
             print(error)
             errors.append(error)
             print()
             continue
+
+        os.remove(os.path.join(path, args.patch))
         print()
 
     if errors is not None:

@@ -153,7 +153,6 @@ def main():
 
     if any(errors):
         print("The following errors occurred during execution:")
-        print(errors)
         for error in errors:
             for e in error:
                 print(e)
