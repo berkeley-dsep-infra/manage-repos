@@ -21,6 +21,3 @@ jobs:
           run: ruff check --output-format=github .
 
         - uses: codespell-project/actions-codespell@v2
-
-
-    
