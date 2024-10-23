@@ -5,14 +5,14 @@ import sys
 from . import manage_repos
 
 
-def check_config(args):
+def check_config(config):
     """
     Check all entries in the config file to confirm they are in the proper
     format:
 
     git@github.com:<user or org>/<repo name>.git
     """
-    with open(args.config) as f:
+    with open(config) as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -21,7 +21,7 @@ def check_config(args):
             if not re.match(
                 "^git@github.com:[a-zA-Z0-9\.\-\_]+/[a-zA-Z0-9\.\-\_]+\.git$", line
             ):
-                print(f"Malformed entry in {args.config}: {line}. Exiting.")
+                print(f"Malformed entry in {config}: {line}. Exiting.")
                 sys.exit(1)
 
 
@@ -153,7 +153,7 @@ def main():
 
     print(args)
 
-    check_config(args)
+    check_config(args.config)
 
     errors = []
     if args.command == "branch":
