@@ -150,7 +150,6 @@ def main():
     )
 
     args = argparser.parse_args()
-
     print(args)
 
     check_config(args.config)

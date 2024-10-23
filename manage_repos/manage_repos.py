@@ -1,10 +1,3 @@
-"""
-General tool for mass cloning and syncing of user image repositories.
-
-To use this tool, copy it to a directory in your PATH or run it directly from
-this directory.
-"""
-
 import re
 import shutil
 import subprocess
