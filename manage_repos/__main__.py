@@ -171,7 +171,7 @@ def main():
         argparser.print_help()
 
     if any(errors):
-        print("The following errors occurred during execution:")
+        print("\nThe following errors occurred during execution:")
         for error in errors:
             for e in error:
                 print(e)
