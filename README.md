@@ -1,4 +1,4 @@
-# Tooling to help mange user image repos
+# Tooling to help manage user image repos
 
 To install, clone this repo and from inside the directory run:
 

@@ -1,10 +1,5 @@
-"""
-General tool for mass cloning and syncing of user image repositories.
-
-To use this tool, copy it to a directory in your PATH or run it directly from
-this directory.
-"""
-
+import re
+import shutil
 import subprocess
 import sys
 import os
@@ -23,9 +18,16 @@ def _iter_repos(args):
                 continue
             name = line.split("/")[-1].replace(".git", "")
             path = os.path.join(args.destination, name)
-            if not os.path.exists(path):
-                if args.command != "clone":
-                    print(f"Skipping {name} as it doesn't exist in {args.destination}")
+
+            # clone behavior is a little different than other commands when
+            # checking for existing repos
+            if args.command == "clone":
+                if os.path.exists(path):
+                    print(f"Skipping {name} as it already exists in {path}")
+                    continue
+            else:
+                if not os.path.exists(path):
+                    print(f"Skipping {name} as it doesn't exist at {path}")
                     continue
             yield name, path, line
 
@@ -60,23 +62,19 @@ def clone(args):
     Optionally set the the user's GitHub fork as a remote, which defaults to
     'origin'.
     """
+    if args.set_remote and args.github_user is None:
+        print(
+            "Remote cannot be updated, please specify a GitHub username "
+            + "for the fork to continue."
+        )
+        sys.exit(1)
+
     if not os.path.exists(args.destination):
         os.makedirs(args.destination)
         print(f"Created destination directory {args.destination}")
 
     errors = []
     for name, path, repo in _iter_repos(args):
-        if os.path.exists(path):
-            print(f"Skipping {name} as it already exists.")
-            next
-
-        if args.remote and not args.github_user:
-            print(
-                "Remote cannot be updated, please specify a GitHub username "
-                + "for the fork to continue."
-            )
-            sys.exit(1)
-
         print(f"Cloning {name} from {repo} to {path}.")
         try:
             subprocess.check_call(["git", "clone", repo, path])
@@ -102,11 +100,12 @@ def clone(args):
                 print()
                 continue
 
-            remote = repo.replace("berkeley-dsep-infra", args.github_user)
-            print(f"Setting remote of fork to: {remote}")
+            original_remote = re.search(".+:(.+?)/.*$", repo).group(1)
+            repo = repo.replace(original_remote, args.github_user)
+            print(f"Setting remote of fork to: {repo}")
             try:
                 subprocess.check_call(
-                    ["git", "remote", "add", args.remote, remote], cwd=path
+                    ["git", "remote", "add", args.set_remote, repo], cwd=path
                 )
             except subprocess.CalledProcessError as e:
                 error = f"Error setting remote in {name} in {path}: {e}"
@@ -134,17 +133,21 @@ def patch(args):
         print(f"Patch file {args.patch} does not exist.")
         sys.exit(1)
 
+    type(args.patch)
     errors = []
     for name, path, _ in _iter_repos(args):
         print(f"Applying patch to {name} in {path}")
         try:
+            shutil.copy(args.patch, path)
             subprocess.check_call(["git", "apply", args.patch], cwd=path)
         except subprocess.CalledProcessError as e:
-            error = f"Error applying patch {patch} to {name} in {path}: {e}"
+            error = f"Error applying patch {args.patch} in {path}: {e}"
             print(error)
             errors.append(error)
             print()
             continue
+
+        os.remove(os.path.join(path, args.patch))
         print()
 
     if errors is not None:
@@ -182,6 +185,11 @@ def stage(args):
     committing them.
     """
     errors = []
+
+    if not args.message:
+        print("Please provide a commit message via the --message argument.")
+        sys.exit(1)
+
     for name, path, repo in _iter_repos(args):
         for file in args.files:
             if file == ".":
@@ -234,10 +242,20 @@ def sync(args):
     for name, path, repo in _iter_repos(args):
         print(f"Syncing {name} from {repo} to {path}.")
         subprocess.check_call(["git", "switch", args.branch_default], cwd=path)
-        subprocess.check_call(["git", "fetch", "--all", "--prune"], cwd=path)
+
+        try:
+            subprocess.check_call(["git", "fetch", "--all", "--prune"], cwd=path)
+        except subprocess.CalledProcessError as e:
+            error = f"Error fetching {name}: {e}"
+            error += f"\nPlease check to see if your fork of of {name} exists."
+            print(error)
+            errors.append(error)
+            print()
+            continue
+
         try:
             subprocess.check_call(
-                ["git", "rebase", "upstream/" + args.branch_default], cwd=path
+                ["git", "rebase", "--stat", "upstream/" + args.branch_default], cwd=path
             )
         except subprocess.CalledProcessError as e:
             error = f"Error rebasing {name} to {path}: {e}"
