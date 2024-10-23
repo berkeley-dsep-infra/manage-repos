@@ -5,6 +5,7 @@ To use this tool, copy it to a directory in your PATH or run it directly from
 this directory.
 """
 
+import re
 import shutil
 import subprocess
 import sys
@@ -68,19 +69,19 @@ def clone(args):
     Optionally set the the user's GitHub fork as a remote, which defaults to
     'origin'.
     """
+    if args.set_remote and args.github_user is None:
+        print(
+            "Remote cannot be updated, please specify a GitHub username "
+            + "for the fork to continue."
+        )
+        sys.exit(1)
+
     if not os.path.exists(args.destination):
         os.makedirs(args.destination)
         print(f"Created destination directory {args.destination}")
 
     errors = []
     for name, path, repo in _iter_repos(args):
-        if args.set_remote and not args.github_user:
-            print(
-                "Remote cannot be updated, please specify a GitHub username "
-                + "for the fork to continue."
-            )
-            sys.exit(1)
-
         print(f"Cloning {name} from {repo} to {path}.")
         try:
             subprocess.check_call(["git", "clone", repo, path])
@@ -106,11 +107,12 @@ def clone(args):
                 print()
                 continue
 
-            remote = repo.replace("berkeley-dsep-infra", args.github_user)
-            print(f"Setting remote of fork to: {remote}")
+            original_remote = re.search('.+:(.+?)/.*$', repo).group(1)
+            repo = repo.replace(original_remote, args.github_user)
+            print(f"Setting remote of fork to: {repo}")
             try:
                 subprocess.check_call(
-                    ["git", "remote", "add", args.remote, remote], cwd=path
+                    ["git", "remote", "add", args.set_remote, repo], cwd=path
                 )
             except subprocess.CalledProcessError as e:
                 error = f"Error setting remote in {name} in {path}: {e}"
@@ -141,7 +143,6 @@ def patch(args):
     type(args.patch)
     errors = []
     for name, path, _ in _iter_repos(args):
-        type(path)
         print(f"Applying patch to {name} in {path}")
         try:
             shutil.copy(args.patch, path)

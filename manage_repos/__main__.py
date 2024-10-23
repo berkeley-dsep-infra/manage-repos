@@ -1,6 +1,27 @@
 import argparse
+import re
+import sys
+
 from . import manage_repos
 
+def check_config(args):
+    """
+    Check all entries in the config file to confirm they are in the proper
+    format:
+
+    git@github.com:<user or org>/<repo name>.git
+    """
+    with open(args.config) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+
+            if not re.match(
+                '^git@github.com:[a-zA-Z0-9\.\-\_]+/[a-zA-Z0-9\.\-\_]+\.git$', line
+            ):
+                print(f"Malformed entry in {args.config}: {line}. Exiting.")
+                sys.exit(1)
 
 def main():
     argparser = argparse.ArgumentParser()
@@ -13,7 +34,7 @@ def main():
         "-c",
         "--config",
         default="repos.txt",
-        help="Path to file containing list of repositories to operate on. "
+        help="Path to the file containing list of repositories to operate on. "
         + "Defaults to repos.txt located in the current working directory.",
     )
     argparser.add_argument(
@@ -21,9 +42,7 @@ def main():
         "--destination",
         default=".",
         help="Location on the filesystem of the directory containing the "
-        + "managed repositories. If a repo sub-directory does not exist, it "
-        + "will be created. This argument is optional, and if not provided "
-        + "defaults to the current working directory.",
+        + "managed repositories. Defaults to the current working directory.",
     )
 
     branch_parser = subparsers.add_parser(
@@ -39,25 +58,21 @@ def main():
     clone_parser = subparsers.add_parser(
         "clone",
         description="Clone repositories in the config file and "
-        + "optionally set a remote for a fork.",
+        + "optionally set a remote for a fork. If a repository sub-directory "
+        + "does not exist, it will be created.",
     )
     clone_parser.add_argument(
         "-s",
         "--set-remote",
-        action="store_true",
-        help="Set the user's GitHub fork as a remote.",
-    )
-    clone_parser.add_argument(
-        "-r",
-        "--remote",
-        default="origin",
-        help="If --set-remote is used, override the name of the remote to "
-        + "set for the fork. This is optional and defaults to 'origin'.",
+        const="origin",
+        nargs="?",
+        help="Set the user's GitHub fork as a remote. Defaults to 'origin'.",
     )
     clone_parser.add_argument(
         "-g",
         "--github-user",
-        help="The GitHub username of the fork to set in the remote.",
+        help="The GitHub username of the fork to set in the remote. Required "
+        + "if --set-remote is used."
     )
 
     patch_parser = subparsers.add_parser(
@@ -135,6 +150,9 @@ def main():
     args = argparser.parse_args()
 
     print(args)
+
+    check_config(args)
+
     errors = []
     if args.command == "branch":
         errors.append(manage_repos.branch(args))
