@@ -107,7 +107,7 @@ def clone(args):
                 print()
                 continue
 
-            original_remote = re.search('.+:(.+?)/.*$', repo).group(1)
+            original_remote = re.search(".+:(.+?)/.*$", repo).group(1)
             repo = repo.replace(original_remote, args.github_user)
             print(f"Setting remote of fork to: {repo}")
             try:

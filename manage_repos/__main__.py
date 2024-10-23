@@ -4,6 +4,7 @@ import sys
 
 from . import manage_repos
 
+
 def check_config(args):
     """
     Check all entries in the config file to confirm they are in the proper
@@ -18,10 +19,11 @@ def check_config(args):
                 continue
 
             if not re.match(
-                '^git@github.com:[a-zA-Z0-9\.\-\_]+/[a-zA-Z0-9\.\-\_]+\.git$', line
+                "^git@github.com:[a-zA-Z0-9\.\-\_]+/[a-zA-Z0-9\.\-\_]+\.git$", line
             ):
                 print(f"Malformed entry in {args.config}: {line}. Exiting.")
                 sys.exit(1)
+
 
 def main():
     argparser = argparse.ArgumentParser()
@@ -72,7 +74,7 @@ def main():
         "-g",
         "--github-user",
         help="The GitHub username of the fork to set in the remote. Required "
-        + "if --set-remote is used."
+        + "if --set-remote is used.",
     )
 
     patch_parser = subparsers.add_parser(
