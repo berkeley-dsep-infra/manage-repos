@@ -2,6 +2,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import os
 
 
@@ -154,6 +155,64 @@ def patch(args):
         return errors
 
 
+def pr(args):
+    """
+    Using the Github CLI tool (gh), push a feature branch and create a PR.
+    """
+    if not args.title:
+        print("Please specify a PR title using the --title arguments.")
+        sys.exit(1)
+    errors = []
+    for name, path, repo in _iter_repos(args):
+        try:
+            branch = (
+                subprocess.run(
+                    ["git", "branch", "--show-current"], cwd=path, capture_output=True
+                )
+                .stdout.decode("utf-8")
+                .strip()
+            )
+        except subprocess.CalledProcessError as e:
+            error = f"Unable to get branch from {name}: {e}."
+            print(error)
+            errors.append(error)
+            print()
+            continue
+
+        if branch == "main":
+            error = f"Currently on branch 'main' in {name}. Not creating a PR "
+            +"for this repository."
+            print(error)
+            errors.append(error)
+            continue
+        else:
+            print(f"Creating a pull request for {name} on branch {branch}")
+
+            owner_and_repo = re.search(".+:(.+?).git$", repo).group(1)
+            try:
+                command = [
+                    "gh",
+                    "pr",
+                    "new",
+                    f"-t {args.title}",
+                    f"-R{owner_and_repo}",
+                    f"-H{args.github_user}:{branch}",
+                    f"-B{args.branch_default}",
+                ]
+                if args.body is not None:
+                    command.append(f"-b {args.body}")
+                subprocess.run(command)
+            except subprocess.CalledProcessError as e:
+                error = f"Unable to create pull request for {name}: {e}"
+                print(error)
+                errors.append(error)
+                print()
+                continue
+
+            # sleep for 2 seconds to keep us from being rate limited
+            time.sleep(2)
+
+
 def push(args):
     """
     Push all repositories in the config file to a remote.
@@ -200,7 +259,7 @@ def stage(args):
                     text=True,
                 )
                 print(f"Adding all changes in {name} to staging:")
-                print(changed_files.stdout)
+                print(changed_files.stdout.strip())
             else:
                 print(f"Adding {file} to staging in {name}.")
 

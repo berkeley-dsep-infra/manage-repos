@@ -83,6 +83,34 @@ def main():
     )
     patch_parser.add_argument("-p", "--patch", help="Path to the patch file to apply.")
 
+    pr_parser = subparsers.add_parser(
+        "pr",
+        description="Using the gh tool, push any commits and create a pull "
+        + "request after pushing.",
+    )
+    pr_parser.add_argument(
+        "-t",
+        "--title",
+        help="Title of the pull request (required).",
+    )
+    pr_parser.add_argument(
+        "-b",
+        "--body",
+        help="Body of the pull request (optional).",
+    )
+    pr_parser.add_argument(
+        "-B",
+        "--branch-default",
+        default="main",
+        help="Default remote branch to create pull request for. This is "
+        + "optional and defaults to 'main'.",
+    )
+    pr_parser.add_argument(
+        "-g",
+        "--github-user",
+        help="The GitHub username used to create the pull request",
+    )
+
     push_parser = subparsers.add_parser(
         "push",
         description="Push managed repositories to a remote.",
@@ -160,6 +188,8 @@ def main():
         errors.append(manage_repos.clone(args))
     elif args.command == "patch":
         errors.append(manage_repos.patch(args))
+    elif args.command == "pr":
+        errors.append(manage_repos.pr(args))
     elif args.command == "push":
         errors.append(manage_repos.push(args))
     elif args.command == "stage":
