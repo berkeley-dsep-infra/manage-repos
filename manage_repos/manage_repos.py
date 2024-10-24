@@ -2,6 +2,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import os
 
 
@@ -210,6 +211,9 @@ def pr(args):
                 errors.append(error)
                 print()
                 continue
+
+            # sleep for 2 seconds to keep us from being rate limited
+            time.sleep(2)
 
 
 def push(args):
