@@ -96,7 +96,6 @@ def main():
     pr_parser.add_argument(
         "-b",
         "--body",
-        nargs="?",
         help="Body of the pull request (optional).",
     )
     pr_parser.add_argument(

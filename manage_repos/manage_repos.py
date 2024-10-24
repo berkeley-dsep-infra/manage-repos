@@ -159,11 +159,8 @@ def pr(args):
     """
     Using the Github CLI tool (gh), push a feature branch and create a PR.
     """
-    if not args.body or not args.title:
-        print(
-            "Please specify a PR title and body using the --title and --body "
-            + "arguments."
-        )
+    if not args.title:
+        print("Please specify a PR title using the --title arguments.")
         sys.exit(1)
     errors = []
     for name, path, repo in _iter_repos(args):
@@ -193,18 +190,18 @@ def pr(args):
 
             owner_and_repo = re.search(".+:(.+?).git$", repo).group(1)
             try:
-                subprocess.run(
-                    [
-                        "gh",
-                        "pr",
-                        "new",
-                        f"-t {args.title}",
-                        f"-b {args.body}",
-                        f"-R{owner_and_repo}",
-                        f"-H{args.github_user}:{branch}",
-                        f"-B{args.branch_default}",
-                    ]
-                )
+                command = [
+                    "gh",
+                    "pr",
+                    "new",
+                    f"-t {args.title}",
+                    f"-R{owner_and_repo}",
+                    f"-H{args.github_user}:{branch}",
+                    f"-B{args.branch_default}",
+                ]
+                if args.body is not None:
+                    command.append(f"-b {args.body}")
+                subprocess.run(command)
             except subprocess.CalledProcessError as e:
                 error = f"Unable to create pull request for {name}: {e}"
                 print(error)
