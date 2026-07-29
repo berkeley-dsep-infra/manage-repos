@@ -22,7 +22,7 @@ def check_config(config):
                 continue
 
             if not re.match(
-                "^git@github.com:[a-zA-Z0-9\.\-\_]+/[a-zA-Z0-9\.\-\_]+\.git$", line
+                r"^git@github.com:[a-zA-Z0-9\.\-\_]+/[a-zA-Z0-9\.\-\_]+\.git$", line
             ):
                 print(f"Malformed entry in {config}: {line}. Exiting.")
                 sys.exit(1)
